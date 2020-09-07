@@ -134,7 +134,6 @@ logout = (req, res) => {
             res.sendStatus(403);
         } else {
             req.logout();
-            req.token = "";
             return res.json({ err: "You are logout" });
         }
     });

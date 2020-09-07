@@ -1,3 +1,5 @@
+const multer = require("multer");
+
 // Set The Storage Engine
 const storage = multer.diskStorage({
     destination: "./client/img/",

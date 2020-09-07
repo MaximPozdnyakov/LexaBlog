@@ -36,6 +36,14 @@ app.use(passport.session());
 // Bodyparser middleware
 app.use(express.json());
 
+// Apply routes
+const auth = require("./routes/auth");
+const posts = require("./routes/posts");
+
+// Use routes
+app.use("/api/auth", auth);
+app.use("/api/posts", posts);
+
 // Connect to mongo
 mongoose
     .connect(process.env.mongoURI, {
