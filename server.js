@@ -1,0 +1,55 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const passport = require("passport");
+const cookieSession = require("cookie-session");
+const path = require("path");
+
+dotenv.config({ path: "./config/env/config.env" });
+
+const app = express();
+
+// Session
+app.use(
+    cookieSession({
+        name: "session",
+        secret: "secret",
+    })
+);
+
+// Session Age
+app.use(function (req, res, next) {
+    req.sessionOptions.maxAge = 30 * 24 * 60 * 60 * 1000;
+    next();
+});
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Bodyparser middleware
+app.use(express.json());
+
+// Connect to mongo
+mongoose
+    .connect(process.env.mongoURI, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => console.log("MongoDB connected"))
+    .catch((err) => console.log(err));
+
+const port = process.env.PORT || 8000;
+
+// Serve static assets if in production
+if (process.env.NODE_ENV === "production") {
+    // Set static folder
+    app.use(express.static("client/build"));
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    });
+}
+
+app.listen(port, () => console.log(`Server started on port ${port}`));
