@@ -39,10 +39,12 @@ app.use(express.json());
 // Apply routes
 const auth = require("./routes/auth");
 const posts = require("./routes/posts");
+const comments = require("./routes/comments");
 
 // Use routes
 app.use("/api/auth", auth);
 app.use("/api/posts", posts);
+app.use("/api/comments", comments);
 
 // Connect to mongo
 mongoose

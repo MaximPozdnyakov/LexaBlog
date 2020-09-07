@@ -1,32 +1,17 @@
 const express = require("express");
-const {
-    index,
-    store,
-    update,
-    destroy,
-} = require("../controllers/PostController");
+const { index, store } = require("../controllers/CommentController");
 
 const router = express.Router();
 
-// @route   GET api/posts
-// @desc    Get All Posts
+// @route   GET api/comments
+// @desc    Get All comments
 // @access  Public
 router.get("/", index);
 
-// @route   POST api/posts
-// @desc    Create post
+// @route   POST api/comments/
+// @desc    Create comment
 // @access  Private
-router.post("/", verifyToken, store);
-
-// @route   PATCH api/posts/:id
-// @desc    Update post
-// @access  Private
-router.patch("/:id", verifyToken, update);
-
-// @route   POST api/posts/:id
-// @desc    Delete post
-// @access  Private
-router.delete("/:id", verifyToken, destroy);
+router.post("store", verifyToken, store);
 
 // FORMAT OF TOKEN
 // Authorization: Bearer <access_token>
