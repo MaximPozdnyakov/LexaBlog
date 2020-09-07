@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        validate: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     },
     username: {
         type: String,
@@ -19,6 +20,9 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+        validate: /^[A-Za-z]\w{7,14}$/,
+        // password between 7 to 16 characters which contain only characters,
+        // numeric digits, underscore and first character must be a letter
     },
     created_at: {
         type: Date,

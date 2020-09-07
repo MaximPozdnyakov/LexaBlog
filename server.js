@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const passport = require("passport");
 const cookieSession = require("cookie-session");
+const multer = require("multer");
 const path = require("path");
+
+const { storage } = require("./config/multer");
 
 dotenv.config({ path: "./config/env/config.env" });
 
