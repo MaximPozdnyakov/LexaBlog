@@ -9,6 +9,9 @@ dotenv.config({ path: "./config/env/config.env" });
 
 const app = express();
 
+// Passport Config
+require("./config/passport")(passport);
+
 // Session
 app.use(
     cookieSession({
