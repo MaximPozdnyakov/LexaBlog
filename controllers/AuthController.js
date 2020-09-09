@@ -7,117 +7,133 @@ const User = require("../models/User");
 const { imgUpload } = require("../config/multer");
 
 index = (req, res) => {
-    jwt.verify(req.token, "secretkey", (err, authData) => {
+    jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
         if (err) {
-            res.json({ err: "Forbidden" });
+            return res.status(401).json({ msg: "Unauthorized" });
         } else {
-            res.json(authData);
+            return res.status(200).json(authData);
         }
     });
 };
 
 register = (req, res) => {
-    try {
-        const { email, username, password1, password2 } = req.body;
-        let avatar;
+    const { email, username, password1, password2 } = req.body;
+    let avatar;
 
-        User.findOne({ email })
-            .then((doc) => {
-                if (doc)
-                    return res.json({
-                        err: "Sorry, that email is already taken",
-                    });
-                if (password1 === password2) {
-                    imgUpload(req, res, (err) => {
-                        if (err) {
-                            console.log(err);
+    User.findOne({ email })
+        .then((existedUser) => {
+            if (existedUser) {
+                return res.status(400).json({
+                    isError: true,
+                    err: "Sorry, that email is already taken",
+                });
+            }
+
+            if (password1 === password2) {
+                imgUpload(req, res, (err) => {
+                    if (err) {
+                        return res.status(500).json({ msg: "Server Error" });
+                    } else {
+                        if (req.file == undefined) {
+                            avatar = "";
                         } else {
-                            if (req.file == undefined) {
-                                avatar = "";
-                            } else {
-                                avatar = req.file.filename;
+                            avatar = req.file.filename;
 
-                                const newUser = new User({
-                                    email,
-                                    username,
-                                    avatar,
-                                    password: password1,
-                                });
-                                bcrypt.genSalt(10, (err, salt) => {
-                                    bcrypt.hash(
-                                        newUser.password,
-                                        salt,
-                                        (err, hash) => {
-                                            if (err) throw err;
-                                            newUser.password = hash;
-                                            newUser
-                                                .save()
-                                                .then((data) => {
-                                                    jwt.sign(
-                                                        { user: data },
-                                                        "secretkey",
-                                                        {
-                                                            expiresIn:
-                                                                "1000000s",
-                                                        },
-                                                        (err, token) => {
-                                                            res.json({
-                                                                token,
-                                                                user: data,
+                            let newUser = new User({
+                                email,
+                                username,
+                                avatar,
+                            });
+                            bcrypt.genSalt(10, (err, salt) => {
+                                if (err) {
+                                    return res
+                                        .status(500)
+                                        .json({ msg: "Server Error" });
+                                }
+                                bcrypt.hash(password1, salt, (err, hash) => {
+                                    if (err) {
+                                        return res
+                                            .status(500)
+                                            .json({ msg: "Server Error" });
+                                    }
+                                    newUser.password = hash;
+                                    newUser
+                                        .save()
+                                        .then((savedUser) => {
+                                            jwt.sign(
+                                                { user: savedUser },
+                                                process.env.JWT_KEY,
+                                                {
+                                                    expiresIn: "1000000s",
+                                                },
+                                                (err, token) => {
+                                                    if (err) {
+                                                        return res
+                                                            .status(500)
+                                                            .json({
+                                                                msg:
+                                                                    "Server Error",
                                                             });
-                                                        }
-                                                    );
-                                                })
-                                                .catch((err) =>
-                                                    console.log(err)
-                                                );
-                                        }
-                                    );
+                                                    }
+                                                    return res
+                                                        .status(201)
+                                                        .json({
+                                                            token,
+                                                            user: savedUser,
+                                                        });
+                                                }
+                                            );
+                                        })
+                                        .catch((err) =>
+                                            res
+                                                .status(500)
+                                                .json({ msg: "Server Error" })
+                                        );
                                 });
-                            }
+                            });
                         }
-                    });
-                } else {
-                    return res
-                        .status(400)
-                        .json({ err: "Your passwords don't match" });
-                }
-            })
-            .catch((err) => console.log(err));
-    } catch (err) {
-        console.log(err);
-        return res.status(400).json({ err: "Bad request" });
-    }
+                    }
+                });
+            } else {
+                return res.status(400).json({
+                    isError: true,
+                    err: "Your passwords don't match",
+                });
+            }
+        })
+        .catch((err) => res.status(500).json({ msg: "Server Error" }));
 };
 
-// Login
 login = function (req, res, next) {
     passport.authenticate("local", function (err, user, info) {
         if (err) {
-            return res.json({
-                err: "Password and email don`t match",
-            });
+            return res.status(500).json({ msg: "Server Error" });
         }
 
         if (!user) {
-            return res.json({
+            return res.status(400).json({
+                isError: true,
                 err: "Password and email don`t match",
             });
         }
 
         req.logIn(user, function (err) {
             if (err) {
-                return res.json({
+                return res.status(400).json({
+                    isError: true,
                     err: "Password and email don`t match",
                 });
             }
 
             jwt.sign(
                 { user },
-                "secretkey",
+                process.env.JWT_KEY,
                 { expiresIn: "1000000s" },
                 (err, token) => {
-                    res.json({
+                    if (err) {
+                        return res.status(500).json({ msg: "Server Error" });
+                    }
+                    return res.status(200).json({
                         token,
                         user,
                     });
@@ -127,14 +143,13 @@ login = function (req, res, next) {
     })(req, res, next);
 };
 
-// Logout
 logout = (req, res) => {
-    jwt.verify(req.token, "secretkey", (err, authData) => {
+    jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
         if (err) {
-            res.sendStatus(403);
+            res.sendStatus(401).json({ msg: "Unauthorized" });
         } else {
             req.logout();
-            return res.json({ err: "You are logout" });
+            return res.status(200).json({ msg: "You are logout" });
         }
     });
 };

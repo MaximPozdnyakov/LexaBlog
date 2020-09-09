@@ -6,21 +6,23 @@ const { imgUpload } = require("../config/multer");
 
 index = (req, res) => {
     Post.find()
-        .then((posts) => res.json(posts))
-        .catch((err) => console.log(err));
+        .then((posts) => res.status(200).json(posts))
+        .catch((err) => res.status(500).json({ msg: "Server Error" }));
 };
 
 store = (req, res) => {
-    jwt.verify(req.token, "secretkey", (err, authData) => {
+    jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
         if (err) {
-            res.sendStatus(403);
+            return res.sendStatus(401).json({ msg: "Unauthorized" });
         } else {
             imgUpload(req, res, (err) => {
                 if (err) {
-                    console.log(err);
+                    res.status(500).json({ msg: "Server Error" });
                 } else {
                     if (req.file == undefined) {
-                        return res.json({ err: "You should attach image" });
+                        return res
+                            .status(400)
+                            .json({ err: "You should attach an image" });
                     } else {
                         const { title, body } = req.body;
                         const headerImg = req.file.filename;
@@ -31,7 +33,13 @@ store = (req, res) => {
                             authorName: authData.username,
                             authorId: authData.id,
                         });
-                        return res.json(post);
+                        post.save()
+                            .then((savedPost) =>
+                                res.status(201).json(savedPost)
+                            )
+                            .catch((err) =>
+                                res.status(500).json({ msg: "Server Error" })
+                            );
                     }
                 }
             });
@@ -40,39 +48,52 @@ store = (req, res) => {
 };
 
 update = (req, res) => {
-    jwt.verify(req.token, "secretkey", (err, authData) => {
+    jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
         if (err) {
-            res.sendStatus(403);
+            res.sendStatus(401).json({ msg: "Unauthorized" });
         } else {
             imgUpload(req, res, (err) => {
                 if (err) {
-                    console.log(err);
+                    res.status(500).json({ msg: "Server Error" });
                 } else {
                     if (req.file == undefined) {
-                        return res.json({ err: "You should attach image" });
+                        return res.json({ err: "You should attach an image" });
                     } else {
-                        const existedPost = Post.findOne(req.params.id);
-                        if (!existedPost) {
-                            return res
-                                .status(400)
-                                .json({ err: "Post don't exist" });
-                        }
-                        if (existedPost.authorId === authData.id) {
-                            const { title, body } = req.body;
-                            const headerImg = req.file.filename;
+                        Post.findOne(req.params.id)
+                            .then((existedPost) => {
+                                if (!existedPost) {
+                                    return res
+                                        .status(400)
+                                        .json({ err: "Post don't exist" });
+                                }
+                                if (existedPost.authorId === authData.id) {
+                                    const { title, body } = req.body;
+                                    const headerImg = req.file.filename;
 
-                            Post.updateOne(req.params.id, {
-                                title,
-                                body,
-                                headerImg,
+                                    Post.updateOne(req.params.id, {
+                                        title,
+                                        body,
+                                        headerImg,
+                                    })
+                                        .then((updatedPost) => {
+                                            return res
+                                                .status(201)
+                                                .json(updatedPost);
+                                        })
+                                        .catch((err) =>
+                                            res
+                                                .status(500)
+                                                .json({ msg: "Server Error" })
+                                        );
+                                } else {
+                                    return res
+                                        .status(403)
+                                        .json({ msg: "Forbidden" });
+                                }
                             })
-                                .then((newPost) => {
-                                    return res.json(newPost);
-                                })
-                                .catch((err) => console.log(err));
-                        } else {
-                            return res.status(400).json({ err: "Forbidden" });
-                        }
+                            .catch((err) =>
+                                res.status(500).json({ msg: "Server Error" })
+                            );
                     }
                 }
             });
@@ -81,21 +102,30 @@ update = (req, res) => {
 };
 
 destroy = (req, res) => {
-    jwt.verify(req.token, "secretkey", (err, authData) => {
+    jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
         if (err) {
-            res.sendStatus(403);
+            res.sendStatus(401).json({ msg: "Unauthorized" });
         } else {
-            const existedPost = Post.findOne(req.params.id);
-            if (!existedPost) {
-                return res.status(400).json({ err: "Post don't exist" });
-            }
-            if (existedPost.authorId === authData.id) {
-                Post.deleteOne(req.params.id)
-                    .then((deleteInfo) => res.json(deleteInfo))
-                    .catch((err) => console.log(err));
-            } else {
-                return res.status(400).json({ err: "Forbidden" });
-            }
+            Post.findOne(req.params.id)
+                .then((existedPost) => {
+                    if (!existedPost) {
+                        return res
+                            .status(400)
+                            .json({ err: "Post don't exist" });
+                    }
+                    if (existedPost.authorId === authData.id) {
+                        Post.deleteOne(req.params.id)
+                            .then((deleteInfo) =>
+                                res.status(200).json(deleteInfo)
+                            )
+                            .catch((err) =>
+                                res.status(500).json({ msg: "Server Error" })
+                            );
+                    } else {
+                        return res.status(403).json({ err: "Forbidden" });
+                    }
+                })
+                .catch((err) => res.status(500).json({ msg: "Server Error" }));
         }
     });
 };

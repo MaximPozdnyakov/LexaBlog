@@ -5,6 +5,7 @@ const passport = require("passport");
 const cookieSession = require("cookie-session");
 const multer = require("multer");
 const path = require("path");
+const bodyParser = require("body-parser");
 
 const { storage } = require("./config/multer");
 
@@ -34,17 +35,21 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Bodyparser middleware
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.json({ type: "multipart/form-data", limit: "50mb" }));
 
 // Apply routes
 const auth = require("./routes/auth");
 const posts = require("./routes/posts");
 const comments = require("./routes/comments");
+const likes = require("./routes/likes");
 
 // Use routes
 app.use("/api/auth", auth);
 app.use("/api/posts", posts);
 app.use("/api/comments", comments);
+app.use("/api/likes", likes);
 
 // Connect to mongo
 mongoose

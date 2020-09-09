@@ -6,6 +6,14 @@ const CommentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    postId: {
+        type: String,
+        required: true,
+    },
+    parrentId: {
+        type: String,
+        required: true,
+    },
     authorName: {
         type: String,
         required: true,
@@ -24,4 +32,4 @@ const CommentSchema = new mongoose.Schema({
     },
 });
 
-module.exports = Comment = mongoose.model("Comments", CommentSchema);
+module.exports = Comment = mongoose.model("Comment", CommentSchema);
