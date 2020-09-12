@@ -79,10 +79,12 @@ export default {
   top: 3.5em;
   cursor: pointer;
   z-index: 1000;
+  right: 15px !important;
 }
 @media screen and (max-width: 980px) and (min-width: 736px) {
   .bm-burger-button {
     top: 4em;
+    right: 5% !important;
   }
 }
 </style>

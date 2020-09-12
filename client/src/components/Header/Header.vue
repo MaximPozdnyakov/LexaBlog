@@ -73,12 +73,17 @@ export default {
 </script>
 
 <style scoped>
-@media screen and (max-width: 991.98px) {
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+  #header-wrapper {
+    text-align: left;
+  }
+}
+@media screen and (max-width: 767.98px) {
   #header-wrapper {
     text-align: left;
   }
   #logo {
-    margin-left: 36px;
+    margin-left: 15px;
   }
 }
 </style>

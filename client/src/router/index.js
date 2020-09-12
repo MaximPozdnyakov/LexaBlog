@@ -3,6 +3,7 @@ import Router from "vue-router";
 
 import Register from "@/components/Auth/Register";
 import Login from "@/components/Auth/Login";
+import Home from "@/components/Home/Home";
 
 Vue.use(Router);
 
@@ -23,6 +24,11 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         !isAuthorized() ? next() : next("/");
       },
+    },
+    {
+      path: "/",
+      name: "home",
+      component: Home,
     },
   ],
 });

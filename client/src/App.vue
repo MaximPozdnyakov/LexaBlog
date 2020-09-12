@@ -12,13 +12,12 @@
 
 <script>
 import Loading from "vue-loading-overlay";
+import HamburgerMenu from "./components/Header/HamburgerMenu";
 import "vue-loading-overlay/dist/vue-loading.css";
 
 import { mapState, mapActions } from "vuex";
 
 import Header from "./components/Header/Header";
-
-import HamburgerMenu from "./components/Header/HamburgerMenu";
 
 export default {
   components: {
