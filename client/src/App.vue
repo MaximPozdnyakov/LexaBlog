@@ -1,6 +1,8 @@
 <template>
   <loading v-if="!isUserLoaded" :active="true" :is-full-page="true" color="#FF4486"></loading>
   <div v-else id="root">
+    <HamburgerMenu />
+    <Menu />
     <main id="page-wrap">
       <Header />
       <router-view></router-view>
@@ -16,10 +18,13 @@ import { mapState, mapActions } from "vuex";
 
 import Header from "./components/Header/Header";
 
+import HamburgerMenu from "./components/Header/HamburgerMenu";
+
 export default {
   components: {
     Header,
     Loading,
+    HamburgerMenu,
   },
   methods: {
     ...mapActions("auth", ["getAuthorizedUser"]),

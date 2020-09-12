@@ -71,3 +71,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@media screen and (max-width: 991.98px) {
+  #header-wrapper {
+    text-align: left;
+  }
+  #logo {
+    margin-left: 36px;
+  }
+}
+</style>
