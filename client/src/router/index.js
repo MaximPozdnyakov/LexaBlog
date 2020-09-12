@@ -1,13 +1,38 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import Router from "vue-router";
 
-Vue.use(VueRouter);
+import Register from "@/components/Auth/Register";
+import Login from "@/components/Auth/Login";
 
-const routes = [{}];
+Vue.use(Router);
 
-const router = new VueRouter({
-    routes,
+export default new Router({
+  routes: [
+    {
+      path: "/register",
+      name: "register",
+      component: Register,
+      beforeEnter: (to, from, next) => {
+        !isAuthorized() ? next() : next("/");
+      },
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: Login,
+      beforeEnter: (to, from, next) => {
+        !isAuthorized() ? next() : next("/");
+      },
+    },
+  ],
 });
 
-export default router;
+import store from "@/store/index";
+function isAuthorized() {
+  const { isAuthorized } = store.state.auth;
+  if (isAuthorized) {
+    return true;
+  } else {
+    return false;
+  }
+}
