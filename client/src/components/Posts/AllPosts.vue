@@ -2,14 +2,14 @@
   <div id="features-wrapper">
     <div class="container">
       <div class="row postsWrapper">
-        <Post v-for="post in posts" v-bind="post" :key="post.id"></Post>
+        <Post v-for="post in posts" v-bind="post" :key="post._id"></Post>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 
 import Post from "./Post";
 

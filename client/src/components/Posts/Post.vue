@@ -9,7 +9,7 @@
       <div :class="isMobile ? 'inner' : 'media-inner'">
         <header class="postHeader">
           <div class="space-between">
-            <h2>{{ title }}</h2>
+            <h2 class="postTitle">{{ title }}</h2>
             <div>
               <img
                 alt="Ellipsis icon"
@@ -111,6 +111,12 @@ export default {
 .pop-leave-to {
   transform: translateY(-10px) !important;
   opacity: 0 !important;
+}
+.post {
+  padding-top: 0;
+}
+.postTitle {
+  font-size: 2rem;
 }
 .postHeader {
   margin-bottom: 1em;
@@ -230,6 +236,22 @@ export default {
     max-width: 400px;
     margin-right: auto;
     margin-left: auto;
+  }
+  .inner {
+    padding: 1.2em 1em 1em 1em !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .postHeader {
+    margin-bottom: 0.6em;
+  }
+  .info {
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
+  .dots {
+    left: 0px;
   }
 }
 @media screen and (max-width: 980px) {

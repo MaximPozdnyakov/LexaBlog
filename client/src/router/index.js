@@ -6,6 +6,7 @@ import Login from "@/components/Auth/Login";
 import Home from "@/components/Home/Home";
 import CreatePost from "@/components/Posts/CreatePost";
 import AllPosts from "@/components/Posts/AllPosts";
+import YourPosts from "@/components/Posts/YourPosts";
 
 Vue.use(Router);
 
@@ -28,9 +29,12 @@ export default new Router({
       },
     },
     {
-      path: "/posts",
-      name: "allPosts",
-      component: AllPosts,
+      path: "/posts/your",
+      name: "yourPost",
+      component: YourPosts,
+      beforeEnter: (to, from, next) => {
+        isAuthorized() ? next() : next("/");
+      },
     },
     {
       path: "/posts/create",
@@ -39,6 +43,11 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         isAuthorized() ? next() : next("/");
       },
+    },
+    {
+      path: "/posts",
+      name: "allPosts",
+      component: AllPosts,
     },
     {
       path: "/",
