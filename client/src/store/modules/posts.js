@@ -14,7 +14,6 @@ const actions = {
   async createPost({ commit, dispatch }, payload) {
     commit("postsNotLoaded");
     const postData = await postService.createPost(payload);
-    console.log("postData", postData);
     if (!postData.isError) {
       commit("addPost", postData);
       commit("postsLoaded");

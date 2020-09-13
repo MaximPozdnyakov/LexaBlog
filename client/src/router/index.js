@@ -5,6 +5,7 @@ import Register from "@/components/Auth/Register";
 import Login from "@/components/Auth/Login";
 import Home from "@/components/Home/Home";
 import CreatePost from "@/components/Posts/CreatePost";
+import AllPosts from "@/components/Posts/AllPosts";
 
 Vue.use(Router);
 
@@ -25,6 +26,11 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         !isAuthorized() ? next() : next("/");
       },
+    },
+    {
+      path: "/posts",
+      name: "allPosts",
+      component: AllPosts,
     },
     {
       path: "/posts/create",
