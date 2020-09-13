@@ -30,7 +30,7 @@
         <a>Login</a>
       </router-link>
     </li>
-    <li v-if="isAuthorized" @click="logoutAndShowFlash(token)">
+    <li v-if="isAuthorized" @click="logout()">
       <router-link to="/">
         <a>Logout</a>
       </router-link>
@@ -46,20 +46,12 @@ export default {
   name: "HamburgerMenu",
   components: { Slide },
   computed: {
-    ...mapState("user", ["isAuthorized"]),
+    ...mapState("auth", ["isAuthorized"]),
   },
   methods: {
-    ...mapActions("user", ["logout"]),
+    ...mapActions("auth", ["logout"]),
     handleResize() {
       this.windowWidth = window.innerWidth;
-    },
-    ...mapActions("messages", ["createFlashMessage"]),
-    logoutAndShowFlash() {
-      this.createFlashMessage({
-        messageText: "You are successfully logout!",
-        type: "success",
-      });
-      this.logout();
     },
   },
   data() {

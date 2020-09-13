@@ -24,12 +24,11 @@ const actions = {
       return false;
     }
   },
-  async updatePost({ commit, dispatch }, payload) {
+  async updatePost({ commit, dispatch }, { payload, _id }) {
     commit("postsNotLoaded");
-    const postData = await postService.updatePost(payload);
-    console.log("postData", postData);
+    const postData = await postService.updatePost(payload, _id);
     if (!postData.isError) {
-      commit("updatePost", postData.post);
+      commit("updatePost", postData);
       commit("postsLoaded");
       return true;
     } else {
@@ -41,7 +40,7 @@ const actions = {
   async deletePost({ commit }, _id) {
     commit("postsNotLoaded");
     const deleteData = await postService.deletePost(_id);
-    commit("deletePost");
+    commit("deletePost", _id);
     commit("postsLoaded");
   },
 };
@@ -54,7 +53,7 @@ const mutations = {
     state.posts.push(post);
   },
   updatePost(state, updatedPost) {
-    state.posts.map((post) => {
+    state.posts = state.posts.map((post) => {
       if (post._id === updatedPost._id) {
         return updatedPost;
       }
@@ -62,11 +61,7 @@ const mutations = {
     });
   },
   deletePost(state, _id) {
-    state.posts.map((post) => {
-      if (post._id !== _id) {
-        return post;
-      }
-    });
+    state.posts = state.posts.filter((post) => post._id !== _id);
   },
   postsNotLoaded(state) {
     state.isPostsLoaded = false;

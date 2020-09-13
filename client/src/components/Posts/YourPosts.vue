@@ -56,7 +56,6 @@ h1 {
   align-items: center;
 }
 #features-wrapper {
-  padding-top: 0;
   padding-bottom: 1em;
 }
 h1 {

@@ -59,7 +59,7 @@ update = (req, res) => {
               err: "You should attach an image",
             });
           } else {
-            Post.findOne(req.params.id)
+            Post.findOne({ _id: req.params.id })
               .then((existedPost) => {
                 if (!existedPost) {
                   return res
@@ -70,13 +70,24 @@ update = (req, res) => {
                   const { title, body } = req.body;
                   const headerImg = req.file.filename;
 
-                  Post.updateOne(req.params.id, {
-                    title,
-                    body,
-                    headerImg,
-                  })
-                    .then((updatedPost) => {
-                      return res.status(201).json(updatedPost);
+                  Post.updateOne(
+                    { _id: req.params.id },
+                    {
+                      title,
+                      body,
+                      headerImg,
+                    }
+                  )
+                    .then((updateInfo) => {
+                      return res.status(201).json({
+                        _id: req.params.id,
+                        authorId: existedPost.authorId,
+                        authorName: existedPost.authorName,
+                        title,
+                        body,
+                        headerImg,
+                        created_at: existedPost.created_at,
+                      });
                     })
                     .catch((err) =>
                       res.status(500).json({ isError: true, err })
@@ -100,7 +111,7 @@ destroy = (req, res) => {
     if (err) {
       res.sendStatus(401).json({ isError: true, err });
     } else {
-      Post.findOne(req.params.id)
+      Post.findOne({ _id: req.params.id })
         .then((existedPost) => {
           if (!existedPost) {
             return res
@@ -108,7 +119,7 @@ destroy = (req, res) => {
               .json({ isError: true, err: "Post don't exist" });
           }
           if (existedPost.authorId === authData.user._id) {
-            Post.deleteOne(req.params.id)
+            Post.deleteOne({ _id: req.params.id })
               .then((deleteInfo) => res.status(200).json(deleteInfo))
               .catch((err) => res.status(500).json({ isError: true, err }));
           } else {

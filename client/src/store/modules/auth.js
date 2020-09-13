@@ -25,7 +25,6 @@ const actions = {
     if (!userData.isError) {
       localStorage.setItem("token", userData.token);
       commit("setUser", userData.user);
-      commit("userLoaded");
       return true;
     } else {
       dispatch("messages/createMessage", userData.err, { root: true });
@@ -39,7 +38,6 @@ const actions = {
     if (!userData.isError) {
       localStorage.setItem("token", userData.token);
       commit("setUser", userData.user);
-      commit("userLoaded");
       return true;
     } else {
       dispatch("messages/createMessage", userData.err, { root: true });
@@ -52,7 +50,6 @@ const actions = {
     const logoutData = await authService.logout();
     localStorage.removeItem("token");
     commit("logout");
-    commit("userLoaded");
   },
 };
 

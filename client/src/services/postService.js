@@ -20,11 +20,11 @@ export default {
       return err.response.data;
     }
   },
-  async updatePost(payload) {
+  async updatePost(payload, _id) {
     try {
       const updatedPost = await apiWithToken(
         localStorage.getItem("token")
-      ).patch(`posts/${payload._id}`, payload);
+      ).patch(`posts/${_id}`, payload);
       return updatedPost.data;
     } catch (err) {
       return err.response.data;
@@ -34,7 +34,7 @@ export default {
     try {
       const deleteInfo = await apiWithToken(
         localStorage.getItem("token")
-      ).delete(`posts/${_id}`, _id);
+      ).delete(`posts/${_id}`);
       return deleteInfo.data;
     } catch (err) {
       return err.response.data;
