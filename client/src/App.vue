@@ -1,5 +1,10 @@
 <template>
-  <loading v-if="!isUserLoaded" :active="true" :is-full-page="true" color="#FF4486"></loading>
+  <loading
+    v-if="!isUserLoaded || !isPostsLoaded"
+    :active="true"
+    :is-full-page="true"
+    color="#FF4486"
+  ></loading>
   <div v-else id="root">
     <HamburgerMenu />
     <Menu />
@@ -27,13 +32,16 @@ export default {
   },
   methods: {
     ...mapActions("auth", ["getAuthorizedUser"]),
+    ...mapActions("posts", ["fetchPosts"]),
     ...mapActions("messages", ["createMessage"]),
   },
   computed: {
     ...mapState("auth", ["isUserLoaded"]),
+    ...mapState("posts", ["isPostsLoaded"]),
   },
   async created() {
     await this.getAuthorizedUser();
+    await this.fetchPosts();
   },
   watch: {
     "$route.fullPath"() {

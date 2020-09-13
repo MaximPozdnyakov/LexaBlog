@@ -45,11 +45,11 @@ register = (req, res) => {
             });
             bcrypt.genSalt(10, (err, salt) => {
               if (err) {
-                return res.status(500).json({ msg: "Server Error" });
+                return res.status(500).json({ isError: true, err });
               }
               bcrypt.hash(password1, salt, (err, hash) => {
                 if (err) {
-                  return res.status(500).json({ msg: "Server Error" });
+                  return res.status(500).json({ isError: true, err });
                 }
                 newUser.password = hash;
                 newUser
@@ -63,9 +63,7 @@ register = (req, res) => {
                       },
                       (err, token) => {
                         if (err) {
-                          return res.status(500).json({
-                            msg: "Server Error",
-                          });
+                          return res.status(500).json({ isError: true, err });
                         }
                         return res.status(201).json({
                           token,
@@ -74,9 +72,7 @@ register = (req, res) => {
                       }
                     );
                   })
-                  .catch((err) =>
-                    res.status(500).json({ msg: "Server Error" })
-                  );
+                  .catch((err) => res.status(500).json({ isError: true, err }));
               });
             });
           } else {
@@ -87,7 +83,7 @@ register = (req, res) => {
           }
         })
         .catch((err) => {
-          return res.status(500).json({ msg: "Server Error" });
+          return res.status(500).json({ isError: true, err });
         });
     }
   });
@@ -96,7 +92,7 @@ register = (req, res) => {
 login = function (req, res, next) {
   passport.authenticate("local", function (err, user, info) {
     if (err) {
-      return res.status(500).json({ msg: "Server Error" });
+      return res.status(500).json({ isError: true, err });
     }
 
     if (!user) {
@@ -120,7 +116,7 @@ login = function (req, res, next) {
         { expiresIn: "1000000s" },
         (err, token) => {
           if (err) {
-            return res.status(500).json({ msg: "Server Error" });
+            return res.status(500).json({ isError: true, err });
           }
           return res.status(200).json({
             token,
@@ -135,7 +131,7 @@ login = function (req, res, next) {
 logout = (req, res) => {
   jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
     if (err) {
-      return res.sendStatus(401).json({ msg: "Unauthorized" });
+      return res.sendStatus(401).json({ isError: true, err });
     } else {
       req.logout();
       return res.status(200).json({ msg: "You are logout" });

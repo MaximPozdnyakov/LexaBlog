@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-7 col-12-medium">
           <h2>Hi! This is Lexa!</h2>
-          <p>It's blog made on Node and Vue js</p>
+          <p>It's blog made on Vue js</p>
         </div>
         <div class="col-5 col-12-medium">
           <ul>
@@ -33,7 +33,7 @@ import { mapState } from "vuex";
 export default {
   name: "Banner",
   computed: {
-    ...mapState("user", ["isAuthorized"]),
+    ...mapState("auth", ["isAuthorized"]),
   },
 };
 </script>

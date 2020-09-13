@@ -8,60 +8,51 @@ const state = {
 
 const actions = {
   async getAuthorizedUser({ commit }) {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const userData = await authService.getAuthorizedUser();
-        if (!userData.isError) {
-          commit("setUser", userData);
-        } else {
-          localStorage.removeItem("token");
-        }
+    const token = localStorage.getItem("token");
+    if (token) {
+      const userData = await authService.getAuthorizedUser();
+      if (!userData.isError) {
+        commit("setUser", userData.user);
+      } else {
+        localStorage.removeItem("token");
       }
-      commit("userLoaded");
-    } catch (err) {}
+    }
+    commit("userLoaded");
   },
   async register({ commit, dispatch }, payload) {
-    try {
-      commit("userNotLoaded");
-      const userData = await authService.register(payload);
-      if (!userData.isError) {
-        localStorage.setItem("token", userData.token);
-        commit("setUser", userData.user);
-        commit("userLoaded");
-        return true;
-      } else {
-        dispatch("messages/createMessage", userData.err, { root: true });
-        commit("userLoaded");
-        return false;
-      }
-    } catch (err) {}
+    commit("userNotLoaded");
+    const userData = await authService.register(payload);
+    if (!userData.isError) {
+      localStorage.setItem("token", userData.token);
+      commit("setUser", userData.user);
+      commit("userLoaded");
+      return true;
+    } else {
+      dispatch("messages/createMessage", userData.err, { root: true });
+      commit("userLoaded");
+      return false;
+    }
   },
   async login({ commit, dispatch }, payload) {
-    try {
-      commit("userNotLoaded");
-      const userData = await authService.login(payload);
-      console.log("userData", userData);
-      if (!userData.isError) {
-        localStorage.setItem("token", userData.token);
-        commit("setUser", userData.user);
-        commit("userLoaded");
-        return true;
-      } else {
-        dispatch("messages/createMessage", userData.err, { root: true });
-        commit("userLoaded");
-        return false;
-      }
-    } catch (err) {}
+    commit("userNotLoaded");
+    const userData = await authService.login(payload);
+    if (!userData.isError) {
+      localStorage.setItem("token", userData.token);
+      commit("setUser", userData.user);
+      commit("userLoaded");
+      return true;
+    } else {
+      dispatch("messages/createMessage", userData.err, { root: true });
+      commit("userLoaded");
+      return false;
+    }
   },
   async logout({ commit }) {
-    try {
-      commit("userNotLoaded");
-      const logoutData = await authService.logout();
-      localStorage.removeItem("token");
-      commit("logout");
-      commit("userLoaded");
-    } catch (err) {}
+    commit("userNotLoaded");
+    const logoutData = await authService.logout();
+    localStorage.removeItem("token");
+    commit("logout");
+    commit("userLoaded");
   },
 };
 

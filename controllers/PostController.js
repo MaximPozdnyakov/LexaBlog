@@ -7,20 +7,22 @@ const { imgUpload } = require("../server");
 index = (req, res) => {
   Post.find()
     .then((posts) => res.status(200).json(posts))
-    .catch((err) => res.status(500).json({ msg: "Server Error" }));
+    .catch((err) => res.status(500).json({ isError: true, err }));
 };
 
 store = (req, res) => {
-  jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
+  imgUpload(req, res, (err) => {
     if (err) {
-      return res.sendStatus(401).json({ msg: "Unauthorized" });
+      res.status(400).json({ isError: true, err });
     } else {
-      imgUpload(req, res, (err) => {
+      jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
         if (err) {
-          res.status(500).json({ msg: "Server Error" });
+          return res.status(401).json({ isError: true, err: "Unauthorized" });
         } else {
           if (req.file == undefined) {
-            return res.status(400).json({ err: "You should attach an image" });
+            return res
+              .status(400)
+              .json({ isError: true, err: "You should attach an image" });
           } else {
             const { title, body } = req.body;
             const headerImg = req.file.filename;
@@ -28,13 +30,13 @@ store = (req, res) => {
               title,
               body,
               headerImg,
-              authorName: authData.username,
-              authorId: authData.id,
+              authorName: authData.user.username,
+              authorId: authData.user._id,
             });
             post
               .save()
               .then((savedPost) => res.status(201).json(savedPost))
-              .catch((err) => res.status(500).json({ msg: "Server Error" }));
+              .catch((err) => res.status(500).json({ isError: true, err }));
           }
         }
       });
@@ -45,21 +47,26 @@ store = (req, res) => {
 update = (req, res) => {
   jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
     if (err) {
-      res.sendStatus(401).json({ msg: "Unauthorized" });
+      res.sendStatus(401).json({ isError: true, err });
     } else {
       imgUpload(req, res, (err) => {
         if (err) {
-          res.status(500).json({ msg: "Server Error" });
+          res.status(400).json({ isError: true, err });
         } else {
           if (req.file == undefined) {
-            return res.json({ err: "You should attach an image" });
+            return res.json({
+              isError: true,
+              err: "You should attach an image",
+            });
           } else {
             Post.findOne(req.params.id)
               .then((existedPost) => {
                 if (!existedPost) {
-                  return res.status(400).json({ err: "Post don't exist" });
+                  return res
+                    .status(400)
+                    .json({ isError: true, err: "Post don't exist" });
                 }
-                if (existedPost.authorId === authData.id) {
+                if (existedPost.authorId === authData.user._id) {
                   const { title, body } = req.body;
                   const headerImg = req.file.filename;
 
@@ -72,13 +79,15 @@ update = (req, res) => {
                       return res.status(201).json(updatedPost);
                     })
                     .catch((err) =>
-                      res.status(500).json({ msg: "Server Error" })
+                      res.status(500).json({ isError: true, err })
                     );
                 } else {
-                  return res.status(403).json({ msg: "Forbidden" });
+                  return res
+                    .status(403)
+                    .json({ isError: true, err: "Forbidden" });
                 }
               })
-              .catch((err) => res.status(500).json({ msg: "Server Error" }));
+              .catch((err) => res.status(500).json({ isError: true, err }));
           }
         }
       });
@@ -89,22 +98,24 @@ update = (req, res) => {
 destroy = (req, res) => {
   jwt.verify(req.token, process.env.JWT_KEY, (err, authData) => {
     if (err) {
-      res.sendStatus(401).json({ msg: "Unauthorized" });
+      res.sendStatus(401).json({ isError: true, err });
     } else {
       Post.findOne(req.params.id)
         .then((existedPost) => {
           if (!existedPost) {
-            return res.status(400).json({ err: "Post don't exist" });
+            return res
+              .status(400)
+              .json({ isError: true, err: "Post don't exist" });
           }
-          if (existedPost.authorId === authData.id) {
+          if (existedPost.authorId === authData.user._id) {
             Post.deleteOne(req.params.id)
               .then((deleteInfo) => res.status(200).json(deleteInfo))
-              .catch((err) => res.status(500).json({ msg: "Server Error" }));
+              .catch((err) => res.status(500).json({ isError: true, err }));
           } else {
             return res.status(403).json({ err: "Forbidden" });
           }
         })
-        .catch((err) => res.status(500).json({ msg: "Server Error" }));
+        .catch((err) => res.status(500).json({ isError: true, err }));
     }
   });
 };
