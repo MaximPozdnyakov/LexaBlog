@@ -15,7 +15,6 @@ const CommentSchema = new mongoose.Schema({
   },
   parrentId: {
     type: String,
-    required: true,
   },
   authorName: {
     type: String,

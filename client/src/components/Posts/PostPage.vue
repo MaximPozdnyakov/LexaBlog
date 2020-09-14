@@ -28,6 +28,7 @@
           </a>
           <p>{{ post.body }}</p>
         </article>
+        <CommentsWrapper />
       </div>
     </div>
   </div>
@@ -38,8 +39,13 @@ import { mapActions, mapState } from "vuex";
 
 import moment from "moment";
 
+import CommentsWrapper from "@/components/Comments/CommentsWrapper";
+
 export default {
   name: "PostPage",
+  components: {
+    CommentsWrapper,
+  },
   data() {
     return {
       isMenuOpen: false,
@@ -62,6 +68,9 @@ export default {
 </script>
 
 <style scoped>
+article {
+  margin-bottom: 3em;
+}
 #main-wrapper {
   padding: 40px 15px;
 }

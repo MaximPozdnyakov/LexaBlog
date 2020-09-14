@@ -45,6 +45,7 @@
           <router-link :to="{ name: 'post', params: { postId: _id }}">
             <a class="button icon solid">Read More</a>
           </router-link>
+          <span class="comments">Comments({{ numberOfCommentsByPost(_id) }})</span>
         </div>
       </div>
     </section>
@@ -53,7 +54,7 @@
 
 <script>
 import moment from "moment";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
   name: "Post",
@@ -74,6 +75,7 @@ export default {
   },
   computed: {
     ...mapState("auth", ["user"]),
+    ...mapGetters("comments", ["numberOfCommentsByPost"]),
     postBodyShort() {
       if (this.isMobile) {
         return this.body.slice(0, 150) + " ...";
@@ -101,6 +103,9 @@ export default {
 </script>
 
 <style scoped>
+.comments {
+  font-size: 1.2em;
+}
 .pop-enter-active {
   transition: all 0.3s ease !important;
 }

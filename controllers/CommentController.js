@@ -13,10 +13,15 @@ store = (req, res) => {
     if (err) {
       res.sendStatus(401).json({ isError: true, err });
     } else {
-      const { body, postId, parrentId } = req.body;
-      const authorName = authData.user.username;
-      const authorAvatar = authData.user.avatar;
-      const authorId = authData.user.id;
+      const {
+        body,
+        postId,
+        parrentId,
+        authorName,
+        authorId,
+        authorAvatar,
+      } = req.body;
+      console.log("req.body", req.body);
 
       const comment = new Comment({
         body,
@@ -26,6 +31,7 @@ store = (req, res) => {
         authorAvatar,
         authorId,
       });
+      console.log("comment", comment);
       comment
         .save()
         .then((savedComment) => res.status(201).json(savedComment))

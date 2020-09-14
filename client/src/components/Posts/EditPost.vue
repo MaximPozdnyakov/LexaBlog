@@ -35,8 +35,15 @@
           <span>This field is required</span>
         </div>
       </div>
-      <div class="createPost-submit-field">
+      <div class="editPost-submit-field">
         <button class="btn btn-primary" type="button" @click.prevent="submitPost()">Update Post</button>
+        <router-link to="/posts">
+          <button
+            class="btn btn-danger"
+            type="button"
+            @click.prevent="deletePost($route.params.postId)"
+          >Delete Post</button>
+        </router-link>
       </div>
     </form>
   </section>
@@ -70,7 +77,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions("posts", ["updatePost"]),
+    ...mapActions("posts", ["updatePost", "deletePost"]),
     handleImgUpload() {
       this.img = this.$refs.img.files[0];
     },
@@ -131,6 +138,19 @@ export default {
 </script>
 
 <style scoped>
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  text-decoration: none !important;
+}
+.btn-danger:hover {
+  background-color: #ff4486;
+}
+.editPost-submit-field {
+  margin: 2em auto;
+  display: flex;
+  justify-content: space-between;
+}
 .createPost-form {
   width: 90vw;
   margin: auto;
