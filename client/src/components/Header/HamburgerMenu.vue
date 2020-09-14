@@ -30,7 +30,7 @@
         <a>Login</a>
       </router-link>
     </li>
-    <li v-if="isAuthorized" @click="logout()">
+    <li v-if="isAuthorized" @click="logoutHandle()">
       <router-link to="/">
         <a>Logout</a>
       </router-link>
@@ -52,6 +52,10 @@ export default {
     ...mapActions("auth", ["logout"]),
     handleResize() {
       this.windowWidth = window.innerWidth;
+    },
+    async logoutHandle() {
+      await this.logout();
+      this.$router.go();
     },
   },
   data() {

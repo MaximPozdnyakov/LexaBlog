@@ -55,4 +55,11 @@ h1 {
 #features-wrapper {
   padding-bottom: 1em;
 }
+
+@media screen and (max-width: 736px) {
+  h1 {
+    margin-bottom: 0 !important;
+    margin-top: 1em;
+  }
+}
 </style>

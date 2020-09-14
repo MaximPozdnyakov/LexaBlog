@@ -8,6 +8,7 @@ import CreatePost from "@/components/Posts/CreatePost";
 import AllPosts from "@/components/Posts/AllPosts";
 import YourPosts from "@/components/Posts/YourPosts";
 import EditPost from "@/components/Posts/EditPost";
+import PostPage from "@/components/Posts/PostPage";
 
 Vue.use(Router);
 
@@ -30,6 +31,14 @@ export default new Router({
       },
     },
     {
+      path: "/posts/create",
+      name: "createPost",
+      component: CreatePost,
+      beforeEnter: (to, from, next) => {
+        isAuthorized() ? next() : next("/");
+      },
+    },
+    {
       path: "/posts/edit/:postId",
       name: "edit_post",
       component: EditPost,
@@ -46,12 +55,9 @@ export default new Router({
       },
     },
     {
-      path: "/posts/create",
-      name: "createPost",
-      component: CreatePost,
-      beforeEnter: (to, from, next) => {
-        isAuthorized() ? next() : next("/");
-      },
+      path: "/posts/:postId",
+      name: "post",
+      component: PostPage,
     },
     {
       path: "/posts",

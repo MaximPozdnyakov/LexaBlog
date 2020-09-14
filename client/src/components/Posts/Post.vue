@@ -247,7 +247,7 @@ export default {
     margin-bottom: 0.6em;
   }
   .info {
-    margin-top: 5px;
+    margin-top: 1em;
     margin-bottom: 0;
   }
   .dots {
