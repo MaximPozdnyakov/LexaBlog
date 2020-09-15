@@ -9,6 +9,7 @@ import AllPosts from "@/components/Posts/AllPosts";
 import YourPosts from "@/components/Posts/YourPosts";
 import EditPost from "@/components/Posts/EditPost";
 import PostPage from "@/components/Posts/PostPage";
+import Page404 from "@/components/Utils/Page404";
 
 Vue.use(Router);
 
@@ -68,6 +69,11 @@ export default new Router({
       path: "/",
       name: "home",
       component: Home,
+    },
+    {
+      path: "*",
+      name: "page404",
+      component: Page404,
     },
   ],
 });

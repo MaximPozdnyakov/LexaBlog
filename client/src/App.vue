@@ -1,6 +1,6 @@
 <template>
   <loading
-    v-if="!isUserLoaded || !isPostsLoaded || !isCommentsLoaded"
+    v-if="!isUserLoaded || !isPostsLoaded || !isCommentsLoaded || !isLikesLoaded"
     :active="true"
     :is-full-page="true"
     color="#FF4486"
@@ -34,17 +34,20 @@ export default {
     ...mapActions("auth", ["getAuthorizedUser"]),
     ...mapActions("posts", ["fetchPosts"]),
     ...mapActions("comments", ["fetchComments"]),
+    ...mapActions("likes", ["fetchLikes"]),
     ...mapActions("messages", ["createMessage"]),
   },
   computed: {
     ...mapState("auth", ["isUserLoaded"]),
     ...mapState("posts", ["isPostsLoaded"]),
+    ...mapState("likes", ["isLikesLoaded"]),
     ...mapState("comments", ["isCommentsLoaded"]),
   },
-  async created() {
-    await this.fetchComments();
-    await this.fetchPosts();
-    await this.getAuthorizedUser();
+  created() {
+    this.getAuthorizedUser();
+    this.fetchComments();
+    this.fetchPosts();
+    this.fetchLikes();
   },
   watch: {
     "$route.fullPath"() {
@@ -54,3 +57,9 @@ export default {
   },
 };
 </script>
+
+<style>
+#header-wrapper {
+  padding: 3rem 0;
+}
+</style>

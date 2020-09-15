@@ -1,5 +1,6 @@
 <template>
-  <div id="main-wrapper">
+  <Page404 v-if="!post" />
+  <div id="main-wrapper" v-else>
     <div class="container">
       <div id="content">
         <!-- Content -->
@@ -24,7 +25,7 @@
             <span>{{ dataFormat }}</span>
           </div>
           <a class="image featured">
-            <img :src="`http://localhost:8000/api/image/${post.headerImg}`" alt />
+            <img :src="`api/image/${post.headerImg}`" alt />
           </a>
           <p>{{ post.body }}</p>
         </article>
@@ -40,11 +41,13 @@ import { mapActions, mapState } from "vuex";
 import moment from "moment";
 
 import CommentsWrapper from "@/components/Comments/CommentsWrapper";
+import Page404 from "@/components/Utils/Page404";
 
 export default {
   name: "PostPage",
   components: {
     CommentsWrapper,
+    Page404,
   },
   data() {
     return {
@@ -64,6 +67,11 @@ export default {
       return moment(this.post.created_at).format("LL");
     },
   },
+  // watch: {
+  //   "$route.fullPath"() {
+  //     this.$router.go();
+  //   },
+  // },
 };
 </script>
 

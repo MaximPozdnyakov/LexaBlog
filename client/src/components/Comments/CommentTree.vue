@@ -14,13 +14,14 @@
           {{comment.body}}
         </p>
         <div class="comment_footer">
-          <!-- <svg
+          <svg
             v-tooltip="{ content: 'Please, login to do this', classes: isOpenTooltip, show: false }"
+            @click="like()"
             viewBox="0 0 24 24"
             width="20"
             height="20"
             stroke="#000"
-            stroke-width="2"
+            stroke-width="1"
             :fill="upVoteColor"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -32,11 +33,12 @@
           </svg>
           <svg
             v-tooltip="{ content: 'Please, login to do this', classes: isOpenTooltip }"
+            @click="dislike()"
             viewBox="0 0 24 24"
             width="20"
             height="20"
             stroke="#000"
-            stroke-width="2"
+            stroke-width="1"
             :fill="downVoteColor"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -44,9 +46,11 @@
           >
             <path
               d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
-          />-->
-          <!-- </svg> -->
-          <!-- <h1 :class="rating > 0 ? 'green' : rating === 0 ? '' : 'red'">{{rating}}</h1> -->
+            />
+          </svg>
+          <h1
+            :class="rating > 0 ? 'green rating' : rating === 0 ? 'rating' : 'red rating'"
+          >{{rating}}</h1>
           <a v-if="isAuthorized" @click="isReplying = !isReplying">REPLY</a>
         </div>
         <AddComment :parentId="comment._id" v-if="isReplying" />
@@ -81,16 +85,15 @@ export default {
     ...mapState("auth", ["isAuthorized", "user"]),
     ...mapState("comments", ["comments"]),
     ...mapGetters("comments", ["commentsByPostAndRoot"]),
-    // ...mapGetters("likes", [
-    //   "ratingByComment",
-    //   "isUserLikeComment",
-    //   "likeIdByCommentAndOwner",
-    // ]),
+    ...mapGetters("likes", [
+      "ratingByComment",
+      "isUserLikeComment",
+      "likeIdByCommentAndOwner",
+    ]),
     isParrentRoot() {
       const parrentComment = this.comments.find(
         (com) => com._id === this.comment.parrentId
       );
-      console.log("parrentComment", parrentComment);
       if (parrentComment) {
         return !parrentComment.parrentId;
       }
@@ -111,21 +114,21 @@ export default {
         this.comment._id
       );
     },
-    // rating() {
-    //   return this.ratingByComment(Number(this.comment.id));
-    // },
-    dataFormat() {
-      return moment(this.comment.created_at).startOf("day").fromNow();
+    rating() {
+      return this.ratingByComment(this.comment._id);
     },
-    // isLiked() {
-    //   return this.isUserLikeComment(this.user.id, this.comment.id);
-    // },
-    // upVoteColor() {
-    //   return this.isLiked === true ? "#28a745" : "none";
-    // },
-    // downVoteColor() {
-    //   return this.isLiked === false ? "#dc3545" : "none";
-    // },
+    dataFormat() {
+      return moment(this.comment.created_at).fromNow();
+    },
+    isLiked() {
+      return this.isUserLikeComment(this.user._id, this.comment._id);
+    },
+    upVoteColor() {
+      return this.isLiked === true ? "#28a745" : "none";
+    },
+    downVoteColor() {
+      return this.isLiked === false ? "#dc3545" : "none";
+    },
     isOpenTooltip() {
       return this.isAuthorized ? "noTooltip" : "tooltip";
     },
@@ -133,62 +136,52 @@ export default {
       return `${
         this.comment.authorAvatar.slice(0, 4) === "http"
           ? this.comment.authorAvatar
-          : `http://localhost:8000/api/image/${this.comment.authorAvatar}`
+          : `api/image/${this.comment.authorAvatar}`
       }`;
     },
   },
   methods: {
-    // ...mapActions("likes", ["addLike", "updateLike", "deleteLike"]),
-    // like() {
-    //   if (this.isLiked === "none") {
-    //     this.addLike({
-    //       like: {
-    //         attitude: true,
-    //         owner: this.user.id,
-    //         comment_id: this.comment.id,
-    //       },
-    //       token: this.token,
-    //     });
-    //   } else if (!this.isLiked) {
-    //     this.updateLike({
-    //       like: {
-    //         attitude: true,
-    //       },
-    //       likeId: this.likeIdByCommentAndOwner(this.user.id, this.comment.id),
-    //       token: this.token,
-    //     });
-    //   } else {
-    //     this.deleteLike({
-    //       likeId: this.likeIdByCommentAndOwner(this.user.id, this.comment.id),
-    //       token: this.token,
-    //     });
-    //   }
-    // },
-    // dislike() {
-    //   if (this.isLiked === "none") {
-    //     this.addLike({
-    //       like: {
-    //         attitude: false,
-    //         owner: this.user.id,
-    //         comment_id: this.comment.id,
-    //       },
-    //       token: this.token,
-    //     });
-    //   } else if (this.isLiked) {
-    //     this.updateLike({
-    //       like: {
-    //         attitude: false,
-    //       },
-    //       likeId: this.likeIdByCommentAndOwner(this.user.id, this.comment.id),
-    //       token: this.token,
-    //     });
-    //   } else {
-    //     this.deleteLike({
-    //       likeId: this.likeIdByCommentAndOwner(this.user.id, this.comment.id),
-    //       token: this.token,
-    //     });
-    //   }
-    // },
+    ...mapActions("likes", ["createLike", "updateLike", "deleteLike"]),
+    like() {
+      if (this.isLiked === "none") {
+        this.createLike({
+          attitude: true,
+          authorId: this.user._id,
+          commentId: this.comment._id,
+        });
+      } else if (!this.isLiked) {
+        this.updateLike({
+          payload: {
+            attitude: true,
+          },
+          _id: this.likeIdByCommentAndOwner(this.user._id, this.comment._id),
+        });
+      } else {
+        this.deleteLike(
+          this.likeIdByCommentAndOwner(this.user._id, this.comment._id)
+        );
+      }
+    },
+    dislike() {
+      if (this.isLiked === "none") {
+        this.createLike({
+          attitude: false,
+          authorId: this.user._id,
+          commentId: this.comment._id,
+        });
+      } else if (this.isLiked) {
+        this.updateLike({
+          payload: {
+            attitude: false,
+          },
+          _id: this.likeIdByCommentAndOwner(this.user._id, this.comment._id),
+        });
+      } else {
+        this.deleteLike(
+          this.likeIdByCommentAndOwner(this.user._id, this.comment._id)
+        );
+      }
+    },
   },
 };
 </script>
@@ -207,6 +200,10 @@ export default {
 </style>
 
 <style scoped>
+.rating {
+  margin-right: 1em;
+  font-weight: 600;
+}
 svg {
   margin-right: 10px;
   cursor: pointer;
@@ -223,6 +220,7 @@ a {
 .comment_footer {
   display: flex;
   align-items: center;
+  margin-left: 10px;
 }
 .date {
   margin-left: 1em;

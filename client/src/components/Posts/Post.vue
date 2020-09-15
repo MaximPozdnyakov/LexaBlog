@@ -3,7 +3,7 @@
     <section :class="isMobile ? 'box feature' : 'media'">
       <router-link :to="{ name: 'post', params: { postId: _id }}">
         <a :class="isMobile ? 'image featured' : 'imageDesktop'">
-          <img class="headerImg" :src="`http://localhost:8000/api/image/${headerImg}`" alt />
+          <img class="headerImg" :src="`api/image/${headerImg}`" alt />
         </a>
       </router-link>
       <div :class="isMobile ? 'inner' : 'media-inner'">

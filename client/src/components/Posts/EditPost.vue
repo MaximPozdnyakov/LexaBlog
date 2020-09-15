@@ -1,5 +1,6 @@
 <template>
-  <section>
+  <Page404 v-if="!existedPost" />
+  <section v-else>
     <form class="createPost-form" novalidate>
       <h1 class="createPost-header">Edit Post</h1>
       <Alert />
@@ -53,6 +54,7 @@
 import { mapActions, mapState } from "vuex";
 
 import Alert from "@/components/Utils/Alert";
+import Page404 from "@/components/Utils/Page404";
 
 export default {
   name: "EditPost",
@@ -66,7 +68,7 @@ export default {
       isValidImg: true,
     };
   },
-  components: { Alert },
+  components: { Alert, Page404 },
   beforeRouteEnter: (to, from, next) => {
     next((vm) => {
       if (vm.existedPost.authorId !== vm.user._id) {

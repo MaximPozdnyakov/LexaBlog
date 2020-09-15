@@ -5,6 +5,7 @@ import auth from "./modules/auth";
 import messages from "./modules/messages";
 import posts from "./modules/posts";
 import comments from "./modules/comments";
+import likes from "./modules/likes";
 
 Vue.use(Vuex);
 
@@ -14,5 +15,6 @@ export default new Vuex.Store({
     messages,
     posts,
     comments,
+    likes,
   },
 });

@@ -4,7 +4,7 @@ const conn = mongoose.createConnection(process.env.mongoURI, {
 });
 
 // Create Schema
-const CommentSchema = new mongoose.Schema({
+const LikeSchema = new mongoose.Schema({
   attitude: {
     type: Boolean,
     required: true,
@@ -23,4 +23,4 @@ const CommentSchema = new mongoose.Schema({
   },
 });
 
-module.exports = Comment = conn.model("Comments", CommentSchema);
+module.exports = Like = conn.model("Likes", LikeSchema);

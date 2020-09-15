@@ -27,7 +27,7 @@ require("./config/passport")(passport);
 app.use(
   cookieSession({
     name: "session",
-    secret: "secret",
+    secret: process.env.SESSION_KEY,
   })
 );
 

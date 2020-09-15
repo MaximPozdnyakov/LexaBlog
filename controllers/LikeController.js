@@ -13,7 +13,7 @@ store = (req, res) => {
     if (err) {
       return res.sendStatus(401).json({ isError: true, err });
     } else {
-      Like.findOne({ authorId: authData.user.id })
+      Like.findOne({ authorId: authData.user._id })
         .then((existedLike) => {
           if (existedLike) {
             return res
@@ -24,7 +24,7 @@ store = (req, res) => {
           const like = new Like({
             attitude,
             commentId,
-            authorId: authData.user.id,
+            authorId: authData.user._id,
           });
           like
             .save()
@@ -41,19 +41,22 @@ update = (req, res) => {
     if (err) {
       res.sendStatus(401).json({ isError: true, err });
     } else {
-      Like.findOne(req.params.id)
+      Like.findOne({ _id: req.params.id })
         .then((existedLike) => {
           if (!existedLike) {
             return res
               .status(400)
               .json({ isError: true, err: "Like don't exist" });
           }
-          if (existedLike.authorId === authData.user.id) {
+          if (existedLike.authorId === authData.user._id) {
             const { attitude } = req.body;
 
-            Like.updateOne(req.params.id, {
-              attitude,
-            })
+            Like.updateOne(
+              { _id: req.params.id },
+              {
+                attitude,
+              }
+            )
               .then((updatedLike) => {
                 return res.status(201).json(updatedLike);
               })
@@ -72,15 +75,15 @@ destroy = (req, res) => {
     if (err) {
       res.sendStatus(401).json({ isError: true, err });
     } else {
-      Like.findOne(req.params.id)
+      Like.findOne({ _id: req.params.id })
         .then((existedLike) => {
           if (!existedLike) {
             return res
               .status(400)
               .json({ isError: true, err: "Like don't exist" });
           }
-          if (existedLike.authorId === authData.user.id) {
-            Like.deleteOne(req.params.id)
+          if (existedLike.authorId === authData.user._id) {
+            Like.deleteOne({ _id: req.params.id })
               .then((deleteInfo) => res.status(200).json(deleteInfo))
               .catch((err) => res.status(500).json({ isError: true, err }));
           } else {
