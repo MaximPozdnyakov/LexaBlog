@@ -4,7 +4,7 @@ client/node_modules
 dist
 
 # local env files
-config/env
+config/env/config.env
 .env
 .env.local
 .env.*.local
